@@ -22,7 +22,7 @@ touch globalactions.txt
 
 DOM=$1
 DOM=ikasten.io
-echo https://$DOM | hakrawler > out-hakrawler-https.txt
+#echo https://$DOM | hakrawler > out-hakrawler-https.txt
 #cat out-hakrawler-https.txt | grep $DOM > out-sorted-https.txt;
 var=$(cat out-sorted-https.txt); rm out-hakrawler-https.txt
 lengthHTTPS=$(echo -e "$var" | wc -l)
