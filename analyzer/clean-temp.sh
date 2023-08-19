@@ -2,6 +2,6 @@
 
 cd ./analyzer
 
-rm temp-*
-rm globalactions.txt
-rm curlout.html
+rm -f temp-*
+rm -f globalactions.txt
+rm -f curlout.html

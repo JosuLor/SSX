@@ -1,0 +1,11 @@
+{ "url": "https://brutelogic.com.br/gym.php", "action": "/gym.php", "method": "POST", "vulns": [{
+"param":
+"p06=XSS",
+"payload":
+"%22%3E2c6c41e28360a7cd8e28fb24a78f5af2"
+},{
+"param":
+"p07=XSS",
+"payload":
+"%22%3E9e64be0e628beb5f63440d7365ea8d22"
+}] }

@@ -2,35 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title> XSS Analyzer - Domain </title>
+    <title> XSS Analyzer - URL </title>
 
     <link href="/css/index-styles.css" rel="stylesheet" type="text/css">
     
     <script>
         let fdInterval;
         let totalUrls = 0;
-        
-
-        function updateURLs() {
-            const url = "/getDomain";
-            
-            document.getElementById("domainurls").src = "/img/loading.gif";
-
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.urls != -1) {
-                        totalUrls = data.urls;
-                        document.getElementById("numberofurls").innerHTML = data.urls + " proper <%= domain %> domain URLs found";
-                        document.getElementById("domainurls").src = "/img/check.png";
-                        document.getElementById("individualurls").src = "/img/loading.gif";
-                        document.getElementById("individualtext").innerHTML = " (0%, 0/" + totalUrls + ") ";
-                        clearInterval(fdInterval);
-                        fetch("/startURLvuln");
-                        setInterval(updateIndividualURLs, 200);
-                    }
-                });
-        }
 
         function updateIndividualURLs() {
             const url = "/getIndividualURL";
@@ -38,13 +16,20 @@
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-
+                    console.log(data)
                     if (data.END == 1) {
-                        document.getElementById("currenturl").innerHTML = "All URLs analyzed";
-                        document.getElementById("fieldDescriptor").innerHTML = "";
+                        document.getElementById("currenturl").innerHTML = "All forms analyzed";
+                        document.getElementById("fieldDescriptor").innerHTML = "&nbsp;";
                         document.getElementById("individualurls").src = "/img/check.png";
                         document.getElementById("buttonSend").style.display = "inline"
                         document.getElementById("buttonSend").style.visibility = "visible";
+
+                        document.getElementById("cuadro1").style.display = "none"
+                        document.getElementById("cuadro1").style.visibility = "hidden";
+
+                        document.getElementById("cuadro2").style.display = "none"
+                        document.getElementById("cuadro2").style.visibility = "hidden";
+                        
                         clearInterval(fdInterval);
                         return;
                     }
@@ -72,19 +57,11 @@
                             document.getElementById("")
                         } else {
                             document.getElementById("fieldDescriptor").innerHTML = data.formField;
-                            
+                            document.getElementById("fieldRes").innerHTML = data.hasXSS;
                         }
                     }
                     
-                    //console.log("Form Field: " + data.formField);
-                    console.log(data)
                 });
-
-                fetch("getProgressPercentage")
-                    .then(response => response.json())
-                    .then(data => { 
-                        document.getElementById("individualtext").innerHTML = " (" + ((data.current / totalUrls) * 100).toFixed() + "%, " + data.current + "/" + totalUrls + ") ";
-                    });
                 
             }
             
@@ -98,25 +75,27 @@
                 document.getElementById("formAction").innerHTML = "";
 
                 document.getElementById("cuadro1").style.display = "none";    
-                document.getElementById("cuadro1").style.visibility = "hidden";  
+                document.getElementById("cuadro1").style.visibility = "hidden";
+
+                document.getElementById("fieldDescriptor").innerHTML = "&nbsp;";
+                document.getElementById("fieldRes").innerHTML = "&nbsp;";
             }
 
         function mainFunction() {
-            fetch("/startFullDomain");
-            fdInterval = setInterval(updateURLs, 50)
             document.getElementById("buttonSend").style.display = "none";
             document.getElementById("buttonSend").style.visibility = "hidden";
+            fetch("/startIndividualURL");
+            document.getElementById("individualurls").src = "/img/loading.gif";
+            fdInterval = setInterval(updateIndividualURLs, 50)
         }
     </script>
 </head>
 <body onload="mainFunction()">
     <%- include("./orbikHeader.ejs") %>
 
-    <h2 style="text-align: left; margin-left: 100px; margin-top: 70px;" class="titulo-con-icono"> Domain URL enumeration &nbsp; &nbsp;</h2><img class="titulo-con-icono" id="domainurls" style="width: 35px; height: 35px;" src="/img/time.png" alt="Cargando..."> </h2> 
-    <h3 style="text-align: left; margin-left: 100px; color: green; margin-top: -10px;" id="numberofurls">&nbsp;</h3>
-    <h2 class="titulo-con-icono2"> <%= domain %> </h2>
-    <h2 style="text-align: left; margin-left: 100px; " class="titulo-con-icono"> Individual URL analysis &nbsp;</h2> <h2 id="individualtext" class="titulo-con-icono">(0%, 0/0)</h2></h2> &nbsp; <img class="titulo-con-icono" id="individualurls" style="width: 35px; height: 35px;" src="/img/time.png" alt="Cargando...">
-    <i><h3 style="text-align: left; margin-left: 100px; color: green; margin-top: -10px;" id="currenturl">&nbsp; </h3></i>
+    <h2 style="text-align: left; margin-left: 100px; " class="titulo-con-icono"> Individual URL analysis &nbsp;</h2> &nbsp; <img class="titulo-con-icono" id="individualurls" style="width: 35px; height: 35px;" src="/img/time.png" alt="Cargando...">
+    <i><h3 style="text-align: left; margin-left: 100px; color: green; margin-top: -10px;" id="currenturl">&nbsp; <%= url %> </h3></i>
+
 
     <br>
     <div class="cuadro" id="cuadro1">
@@ -131,7 +110,7 @@
                 </th>
                 <th>
                     <h3> Analysis result </h3>
-                    <p id="fieldRes">&nbsp; Resultado </p>
+                    <p id="fieldRes">&nbsp; -/- </p>
                 </th>
             </tr>
         </table>

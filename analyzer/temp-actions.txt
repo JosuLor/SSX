@@ -1,2 +1,1 @@
-https://ikasten.io/2023/03/06/custom-javafx-components-in-scenebuilder/
-https://ikasten.io/
+/gym.php

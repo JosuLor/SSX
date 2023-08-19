@@ -21,6 +21,7 @@ var lineas;
 var contURL = 0;
 var nextFlag = false;
 var fdinterval;
+var currentURL = "";
 
 function analyzeDomain() {
     contURL = 0;
@@ -55,10 +56,7 @@ function analyzeIndividualURL(url) {
     
     scriptProcess.stdout.on('data', (data) => {
         var txt = data.toString();
-        if (txt != null) {
-            //console.log("ALL: " + txt)  
-            console.log("not null")
-        }
+        
         //currentURL_JSON = { "url": "urazelda" }
         currentURL_JSON = txt;
     });
@@ -69,7 +67,25 @@ function analyzeIndividualURL(url) {
     });
 }
 
+function analyzeOneURL(url) {
+    const scriptProcess = spawn('bash', [appPath+"eachAnalyzer.sh", url]);
+    
+    scriptProcess.stdout.on('data', (data) => {
+        var txt = data.toString();
+        
+        //currentURL_JSON = { "url": "urazelda" }
+        currentURL_JSON = txt;
+    });
+    
+    scriptProcess.on('close', (code) => {
+        console.log("EXIT INDIVIDUAL: ", code)
+        currentURL_JSON = { "END": 1 };
+    });
+}
+
 app.get("/", (req, res) => {
+    const scriptProcess = spawn('bash', [appPath+"clean-temp.sh"]);
+    currentURL_JSON = "";
     res.render("index.ejs");
 });
 
@@ -77,7 +93,9 @@ app.post("/domainenum", (req, res) => {
     domain = req.body.domain;
     domainJSON = { "urls": -1 };
     contCurrentURL = 0;
-
+    
+    const scriptProcess = spawn('bash', [appPath+"clean-temp.sh"]);
+    currentURL_JSON = "";
     res.render("domainEnum.ejs", { domain: domain });
 });
 
@@ -103,23 +121,25 @@ app.get("/startURLvuln", (req, res) => {
 });
 
 app.get("/getIndividualURL", (req, res) => {
-    var j = { "url": "example.com" };
-    //var currentURL_JSON = { "url": "sovietunion.su" };
+    console.log(currentURL_JSON)
     res.send( currentURL_JSON );
-    //res.send(currentURL_JSON);
 });
 
-
-
-
-
+app.get("/getProgressPercentage", (req, res) => {
+    res.send( { "current": contURL } );
+});
 
 app.post("/urlenum", (req, res) => {
-    url = req.body.url;
-    //res.render("urlenum.ejs", { url: url });
-    
-    
-    res.send("ASDF: " + url);
+    currentURL = req.body.url;
+
+    const scriptProcess = spawn('bash', [appPath+"clean-temp.sh"]);
+    currentURL_JSON = "";
+    res.render("individualEnum.ejs", { url: currentURL });
+});
+
+app.get("/startIndividualURL", (req, res) => {
+    analyzeOneURL(currentURL);
+    res.send("");
 });
 
 app.listen(3000, function() {console.log("Servidor lanzando en el puerto 3000")});
