@@ -41,10 +41,17 @@
 
                     if (data.END == 1) {
                         document.getElementById("currenturl").innerHTML = "All URLs analyzed";
-                        document.getElementById("fieldDescriptor").innerHTML = "";
+                        document.getElementById("fieldDescriptor").innerHTML = "&nbsp;";
                         document.getElementById("individualurls").src = "/img/check.png";
                         document.getElementById("buttonSend").style.display = "inline"
                         document.getElementById("buttonSend").style.visibility = "visible";
+
+                        document.getElementById("cuadro1").style.display = "none"
+                        document.getElementById("cuadro1").style.visibility = "hidden";
+
+                        document.getElementById("cuadro2").style.display = "none"
+                        document.getElementById("cuadro2").style.visibility = "hidden";
+
                         clearInterval(fdInterval);
                         return;
                     }
@@ -56,7 +63,9 @@
                     document.getElementById("cuadro1").style.visibility = "visible";
                     
                     if (data.hasForms == 0) {
-                        document.getElementById("fieldDescriptor").innerHTML = "No forms found; skipping to the next URL...";
+                        document.getElementById("formMethod").innerHTML = "No forms found; skipping to the next URL...";
+                        document.getElementById("cuadro2").style.display = "none"
+                        document.getElementById("cuadro2").style.visibility = "hidden";
                     } else {
                         document.getElementById("formNumber").innerHTML = "&nbsp; Form " + data.formNumber + " ";
                         document.getElementById("formMethod").innerHTML = "&nbsp; | Method: " + data.method + " ";
@@ -72,7 +81,9 @@
                             document.getElementById("")
                         } else {
                             document.getElementById("fieldDescriptor").innerHTML = data.formField;
-                            
+                            document.getElementById("cuadro2").style.display = "flex"
+                            document.getElementById("cuadro2").style.visibility = "visible";
+                            document.getElementById("fieldRes").innerHTML = data.hasXSS;
                         }
                     }
                     
@@ -98,14 +109,24 @@
                 document.getElementById("formAction").innerHTML = "";
 
                 document.getElementById("cuadro1").style.display = "none";    
-                document.getElementById("cuadro1").style.visibility = "hidden";  
+                document.getElementById("cuadro1").style.visibility = "hidden";
+
+                document.getElementById("fieldDescriptor").innerHTML = "&nbsp;";
+                document.getElementById("fieldRes").innerHTML = "&nbsp;";
             }
 
         function mainFunction() {
-            fetch("/startFullDomain");
-            fdInterval = setInterval(updateURLs, 50)
+
+            document.getElementById("cuadro1").style.display = "none"
+            document.getElementById("cuadro1").style.visibility = "hidden";
+
+            document.getElementById("cuadro2").style.display = "none"
+            document.getElementById("cuadro2").style.visibility = "hidden";
+
             document.getElementById("buttonSend").style.display = "none";
             document.getElementById("buttonSend").style.visibility = "hidden";
+            fetch("/startFullDomain");
+            fdInterval = setInterval(updateURLs, 50)
         }
     </script>
 </head>
@@ -131,7 +152,7 @@
                 </th>
                 <th>
                     <h3> Analysis result </h3>
-                    <p id="fieldRes">&nbsp; Resultado </p>
+                    <p id="fieldRes">&nbsp; </p>
                 </th>
             </tr>
         </table>
