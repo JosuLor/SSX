@@ -142,4 +142,10 @@ app.get("/startIndividualURL", (req, res) => {
     res.send("");
 });
 
+app.get("/downloadJSON", (req, res) => {
+    const file = `${__dirname}/analyzer/temp-vulns.json`
+    console.log("FILE: " + file);
+    res.download(file);
+});
+
 app.listen(3000, function() {console.log("Servidor lanzando en el puerto 3000")});
