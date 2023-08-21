@@ -25,7 +25,7 @@ echoar() {
 }
 
 globalactions=$(cat globalactions.txt)
-globalactions=($globalactions)
+#globalactions=()
 url=$1
 
 #url=https://brutelogic.com.br/gym.php
@@ -49,7 +49,7 @@ currentIsAlready=0          # accion ya analizada (efecto blog) | 0 = not alread
 currentHasXSS=""            # "" = no xss; != "" -> el payload
 
 if [ $cuantosforms -eq 0 ]; then
-    #echo -e " > No se han encontrado formularios \n"
+#    echo -e " > No se han encontrado formularios \n"
     currentHasForms=0
     echoar
     exit 1
@@ -63,19 +63,29 @@ for ((i=0; i<$cuantosforms; i++)); do
     forms+=("$txt")
 done
 
+
 localactions=()
 localvulns=()
 forms=("${forms[@]:1}")
 for ((j=0; j<$cuantosforms; j++)); do
     form=${forms[$j]} 
-    
-    names=$(echo -e "$form" | grep -oP '(?<=name=)["'\''].*?["'\''\s]' | sed 's/^["'\'']//; s/["'\'']$//')
+
+    names=$(echo -e "$form" | grep -Eo 'name=["'\''][^"'\'' ]*["'\'']' | sed -E 's/^name=["'\'']|["'\'']$//')
+#echo ===========================
     fieldnames=($names)
-    action=$(echo -e "$form" | grep -oP "(?<=action=)[\"'].*?[\"']" | sed "s/[\"']//g")
+    for idx in "${!fieldnames[@]}"; do
+        modified_element="${fieldnames[idx]%?}" # Eliminar el último carácter
+        fieldnames[idx]="$modified_element"      # Guardar la modificación en la misma posición
+ #       echo $modified_element >> names.txt
+    done
+    
+    action=$(echo -e "$form" | grep -Eo 'action=["'\''][^"'\'' ]*["'\'']' | sed -E 's/^action=["'\'']|["'\'']$//')
+    action=${action%?}
     
     if [ -z "$action" ]; then action="$url"; fi
     method=$(echo -e "$form" | grep "method")
-    method=$(echo -e "$method" | grep -oP "(?<=method=)[\"'].*?[\"']" | sed "s/[\"']//g")
+    method=$(echo -e "$method" | grep -Eo 'method=["'\''][^"'\'' ]*["'\'']' | sed -E 's/^method=["'\'']|["'\'']$//')
+    method=${method%?}
     if [ -z "$method" ]; then method="GET"; fi
 
     green_color
@@ -85,16 +95,24 @@ for ((j=0; j<$cuantosforms; j++)); do
     currentAction="$action"
     currentMethod="$method"
 
-    if [[ " ${localactions[*]} " =~ " ${action} " ]]; then
+    if [ $(echo -e "$globalactions" | grep -x "$action" | wc -l) -ne 0 ]; then
 #        grey_color; echo -e " ### El action ya se ha analizado\n"; default_color;
         currentIsAlready=1
         continue
     fi
-    if [[ " ${globalactions[*]} " =~ " ${action} " ]]; then
+
+
+#    if [[ " ${localactions[*]} " =~ " ${action} " ]]; then
 #        grey_color; echo -e " ### El action ya se ha analizado\n"; default_color;
-        currentIsAlready=1
-        continue
-    fi
+#        currentIsAlready=1
+#        continue
+#    fi
+#    if [[ " ${globalactions[*]} " =~ " ${action} " ]]; then
+#        grey_color; echo -e " ### El action ya se ha analizado\n"; default_color;
+        
+#        currentIsAlready=1
+#        continue
+#    fi
     
 
     localactions+=( "$action" )
@@ -114,9 +132,11 @@ for ((j=0; j<$cuantosforms; j++)); do
         param="${fieldname}=XSS"
 #        echo -en " > Testing form field: $param";
         if [ "$method" == "GET" ] || [ "$method" == "get" ]; then
+            #xsser -u $url?$param > xsserout.txt
             xsser -u $url?$param > xsserout.txt
         else
-            xsser -u $url -p $param > xsserout.txt    
+            #xsser -u $url -p $param > xsserout.txt    
+            xsser -u $url -p $param > xsserout.txt
         fi
         res=$(cat xsserout.txt)
         rm -f xsserout.txt

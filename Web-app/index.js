@@ -40,8 +40,22 @@ function analyzeDomain() {
 function analyzeAllDomain() {
     if (contURL == lineas.length) {
         currentURL_JSON = { "END": 1 };
-
+        
         const scriptProcess = spawn('bash', [appPath+"clean-temp.sh"]);
+
+        fs.access("analyzer/temp-vulns.json", fs.constants.F_OK, (err) => {
+            if (err) {
+              fs.writeFile("analyzer/temp-vulns.json", '{}', (err) => {
+                if (err) {
+                  console.error('Error al crear el archivo:', err);
+                } else {
+                  console.log('Archivo creado exitosamente.');
+                }
+              });
+            } else {
+              console.log('El archivo ya existe.');
+            }
+          });
 
     } else {
         var linea = lineas[contURL];
@@ -57,13 +71,12 @@ function analyzeIndividualURL(url) {
     scriptProcess.stdout.on('data', (data) => {
         var txt = data.toString();
         
-        //currentURL_JSON = { "url": "urazelda" }
         currentURL_JSON = txt;
     });
     
     scriptProcess.on('close', (code) => {
         analyzeAllDomain();
-        console.log("EXIT INDIVIDUAL: ", code)
+        console.log("EXIT INDIVIDUAL: ", url)
     });
 }
 
@@ -73,7 +86,6 @@ function analyzeOneURL(url) {
     scriptProcess.stdout.on('data', (data) => {
         var txt = data.toString();
         
-        //currentURL_JSON = { "url": "urazelda" }
         currentURL_JSON = txt;
     });
     
