@@ -6,7 +6,8 @@ Se puede ejecutar de dos modos; como una aplicación web (con interfaz grafica) 
 Ambas formas de ejecución se encuentran en la misma imagen; comparten ficheros. Es por esto que, la versión de terminal está en la carpeta /webapp también.
 En ambos casos, se genera un fichero .json con las vulnerabilidades encontradas. El fichero estará vacío ( {} ) si no se encuentra ninguna.
 
-Para compilar la imagen y levantar el contenedor, en el directorio raíz:
+El programa se ejecuta en un contenedor Docker; este es precisamente el único requisito para usar el software de este repositorio.
+Para compilar la imagen y levantar el contenedor, en el directorio raíz del repositorio:
 
     -> docker build -t xss .
     -> docker run -p 3000:3000 -it xss
