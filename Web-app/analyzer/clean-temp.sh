@@ -1,8 +1,10 @@
-#!bin/bash
+#!/bin/bash
 
-cd ./analyzer
+if [ $# -eq 0 ]; then
+    cd ./analyzer
+fi
 
-rm -f temp-*
 rm -f globalactions.txt
 rm -f curlout.html
 rm -f xsserout.txt
+rm -f out-sorted-https.txt

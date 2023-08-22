@@ -20,16 +20,26 @@ RUN apk add --no-cache \
     py3-curl \
     py3-beautifulsoup4
 
+RUN apk add --no-cache git make musl-dev go
+
+# Configure Go
+ENV GOROOT /usr/lib/go
+ENV GOPATH /go
+ENV PATH /go/bin:$PATH
+
 # Actualizar repositorios e instalar dependencias necesarias
 RUN apk update && \
     apk add --no-cache python3 git && \
     git clone https://github.com/epsylon/xsser.git /xsser && \
     ln -s /usr/bin/python3 /usr/bin/python
 
+RUN go install github.com/hakluke/hakrawler@latest
 RUN cp -r /xsser/* /webapp/analyzer/
 
+RUN rm -rf /xsser
+
 # Configurar el directorio de trabajo
-WORKDIR /xsser
+WORKDIR /webapp
 
 # Configurar variables de entorno
 ENV PATH="/xsser:${PATH}"

@@ -76,7 +76,7 @@ function analyzeIndividualURL(url) {
     
     scriptProcess.on('close', (code) => {
         analyzeAllDomain();
-        console.log("EXIT INDIVIDUAL: ", url)
+        //console.log("EXIT INDIVIDUAL: ", url)
     });
 }
 
@@ -90,12 +90,27 @@ function analyzeOneURL(url) {
     });
     
     scriptProcess.on('close', (code) => {
-        console.log("EXIT INDIVIDUAL: ", code)
+        //console.log("EXIT INDIVIDUAL: ", code)
         currentURL_JSON = { "END": 1 };
+
+        fs.access("analyzer/temp-vulns.json", fs.constants.F_OK, (err) => {
+            if (err) {
+              fs.writeFile("analyzer/temp-vulns.json", '{}', (err) => {
+                if (err) {
+                  console.error('Error al crear el archivo:', err);
+                } else {
+                  console.log('Archivo creado exitosamente.');
+                }
+              });
+            } else {
+              console.log('El archivo ya existe.');
+            }
+          });
     });
 }
 
 app.get("/", (req, res) => {
+    fs.unlink("analyzer/temp-vulns.json", (err) => {});
     const scriptProcess = spawn('bash', [appPath+"clean-temp.sh"]);
     currentURL_JSON = "";
     res.render("index.ejs");
@@ -106,6 +121,7 @@ app.post("/domainenum", (req, res) => {
     domainJSON = { "urls": -1 };
     contCurrentURL = 0;
     
+    fs.unlink("analyzer/temp-vulns.json", (err) => {});
     const scriptProcess = spawn('bash', [appPath+"clean-temp.sh"]);
     currentURL_JSON = "";
     res.render("domainEnum.ejs", { domain: domain });
@@ -116,11 +132,11 @@ app.get("/getDomain", (req, res) => {
 });
 
 app.get("/startFullDomain", (req, res) => {
-    const scriptProcess = spawn('bash', [appPath+"/test.sh"]);
+    const scriptProcess = spawn('bash', [appPath+"/test.sh", domain]);
 
     scriptProcess.stdout.on('data', (data) => {
         var txt = data.toString();
-        console.log("URLs: " + txt);
+        //console.log("URLs: " + txt);
         domainJSON.urls = txt;
     });
     
@@ -133,7 +149,7 @@ app.get("/startURLvuln", (req, res) => {
 });
 
 app.get("/getIndividualURL", (req, res) => {
-    console.log(currentURL_JSON)
+    //console.log(currentURL_JSON)
     res.send( currentURL_JSON );
 });
 
@@ -144,6 +160,7 @@ app.get("/getProgressPercentage", (req, res) => {
 app.post("/urlenum", (req, res) => {
     currentURL = req.body.url;
 
+    fs.unlink("analyzer/temp-vulns.json", (err) => {});
     const scriptProcess = spawn('bash', [appPath+"clean-temp.sh"]);
     currentURL_JSON = "";
     res.render("individualEnum.ejs", { url: currentURL });

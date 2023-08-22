@@ -25,10 +25,8 @@ echoar() {
 }
 
 globalactions=$(cat globalactions.txt)
-#globalactions=()
 url=$1
 
-#url=https://brutelogic.com.br/gym.php
 #purple_color; echo -e " \n####### Analizando: $url #######"; default_color;
 curl -s -L -o curlout.html $url
 var=$(cat curlout.html);
@@ -133,10 +131,10 @@ for ((j=0; j<$cuantosforms; j++)); do
 #        echo -en " > Testing form field: $param";
         if [ "$method" == "GET" ] || [ "$method" == "get" ]; then
             #xsser -u $url?$param > xsserout.txt
-            xsser -u $url?$param > xsserout.txt
+            ./xsser -u $url?$param > xsserout.txt
         else
             #xsser -u $url -p $param > xsserout.txt    
-            xsser -u $url -p $param > xsserout.txt
+            ./xsser -u $url -p $param > xsserout.txt
         fi
         res=$(cat xsserout.txt)
         rm -f xsserout.txt
@@ -158,6 +156,8 @@ for ((j=0; j<$cuantosforms; j++)); do
         localvulns+=( '{ "url": "'$url'", "action": "'$action'", "method": "'$method'", "vulns": ['$(IFS=,; echo "${localparamvulns[*]}")'] }' )
     fi
 done
+
+echo ${#localparamvulns[@]} >> AAA.txt
 
 for localaction in "${localactions[@]}"; do echo "$localaction" >> temp-actions.txt; done
 for localvuln in "${localvulns[@]}"; do echo "$localvuln" >> temp-vulns.json; done

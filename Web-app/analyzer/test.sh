@@ -9,7 +9,9 @@
 # go build cmd/gau/main.go
 # mv main gau
 
-cd ./analyzer
+if [ $# -eq 1 ]; then
+    cd ./analyzer
+fi
 
 purple_color() { echo -en "\e[35m\e[1m"; }
 green_color() { echo -en "\e[32m\e[1m"; }
@@ -18,18 +20,21 @@ yellow_color() { echo -en "\e[33m\e[1m"; }
 blue_color() { echo -en "\e[34m\e[1m"; }
 default_color() { echo -en "\e[39m\e[0m"; }
 
+rm -f globalactions.txt
 touch globalactions.txt
+rm -f temp-vulns.json
 
 DOM=$1
-DOM=ikasten.io
-#echo https://$DOM | hakrawler > out-hakrawler.txt
-#cat out-hakrawler.txt | grep $DOM > inter-out-sorted-https.txt;
-#sed 's/\[.*\] \(.*\)/\1/' "inter-out-sorted-https.txt" > "out-sorted-https.txt"; 
+echo https://$DOM | hakrawler > out-hakrawler.txt
+cat out-hakrawler.txt | grep "$DOM" > inter-out-sorted-https.txt;
+sed 's/\[.*\] \(.*\)/\1/' "inter-out-sorted-https.txt" > "out-sorted-https.txt"; 
 var=$(cat out-sorted-https.txt); rm -f out-hakrawler.txt; rm -f inter-out-sorted-https.txt
 lengthHTTPS=$(echo -e "$var" | wc -l)
-echo "$lengthHTTPS" >&1
+if [ $# -eq 1 ]; then
+    echo "$lengthHTTPS" >&1
+fi
 
-exit 0
+exit $lengthHTTPS
 
 #if [ "$MODE" == "s" ]; then
 #    echo " > Silent mode: " $DOM
