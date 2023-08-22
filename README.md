@@ -1,4 +1,4 @@
-# SSX
+# XSS Analyzer
 
 Segunda parte del TFG. 
 Este repositorio es el analizador Cross-Site Scripting (XSS) como programa independiente.
@@ -15,9 +15,7 @@ Para salir del contenedor:
 
     -> exit
 
-\==============================/
- ::: Versión aplicación web :::
-/==============================\
+##Versión aplicación web
 
 Una vez levantado y esté corriendo el container, en el directorio /webapp (está por defecto, no hace falta navegar):
 
@@ -36,9 +34,7 @@ Para hacer otro análisis, levantar otra vez el servidor web:
 
     -> npm start
 
-\========================/
- ::: Versión terminal :::
-/========================\
+##Versión terminal
 
 Una vez levantado y esté corriendo el container, navegar hasta el directorio /webapp/analyzer:
 
