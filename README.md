@@ -6,7 +6,7 @@ Se puede ejecutar de dos modos; como una aplicación web (con interfaz grafica) 
 Ambas formas de ejecución se encuentran en la misma imagen; comparten ficheros. Es por esto que, la versión de terminal está en la carpeta /webapp también.
 En ambos casos, se genera un fichero .json con las vulnerabilidades encontradas. El fichero estará vacío ( {} ) si no se encuentra ninguna.
 
-Para compilar la imagen, navegando hasta el directorio raíz:
+Para compilar la imagen y levantar el contenedor, en el directorio raíz:
 
     -> docker build -t xss .
     -> docker run -p 3000:3000 -it xss
@@ -15,7 +15,7 @@ Para salir del contenedor:
 
     -> exit
 
-##Versión aplicación web
+## Versión aplicación web
 
 Una vez levantado y esté corriendo el container, en el directorio /webapp (está por defecto, no hace falta navegar):
 
@@ -34,7 +34,7 @@ Para hacer otro análisis, levantar otra vez el servidor web:
 
     -> npm start
 
-##Versión terminal
+## Versión terminal
 
 Una vez levantado y esté corriendo el container, navegar hasta el directorio /webapp/analyzer:
 
