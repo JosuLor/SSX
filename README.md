@@ -39,7 +39,7 @@ Para hacer otro análisis, levantar otra vez el servidor web:
 
 Una vez levantado y esté corriendo el container, navegar hasta el directorio /webapp/analyzer:
 
-    -> cd /analyzer
+    -> cd analyzer
 
 En ese directorio, se puede lanzar la versión terminal del programa, tanto para análisis de dominio como para análisis de url individual.
 Para análisis de dominio completo:
